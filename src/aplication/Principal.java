@@ -23,17 +23,34 @@ public class Principal {
 		Date dataIn = sdf.parse(sc.next());
 		System.out.print("Check-out date (dd/MM/yyyy): ");
 		Date dataOut = sdf.parse(sc.next());
-		Reserva reserva = new Reserva(num, dataIn, dataOut);
-		System.out.println(reserva);
-		System.out.println();
-		System.out.println("Enter data to update the reservation:");
-		System.out.print("Check-in date (dd/MM/yyyy): ");
-		Date datanovaIn = sdf.parse(sc.next());
-		System.out.print("Check-out date (dd/MM/yyyy): ");
-		Date datanovaOut = sdf.parse(sc.next());
-		Reserva novaReserva = new Reserva(num, datanovaIn, datanovaOut);
-		System.out.println(novaReserva);
-		sc.close();
+		if(!dataOut.after(dataIn)) {
+			System.out.println("Error in reservation: Check-out date must be after check-in date");
+		}
+		else {
+			Reserva reserva = new Reserva(num, dataIn, dataOut);
+			System.out.println(reserva);
+			
+			System.out.println();
+			System.out.println("Enter data to update the reservation:");
+			System.out.print("Check-in date (dd/MM/yyyy): ");
+			dataIn = sdf.parse(sc.next());
+			System.out.print("Check-out date (dd/MM/yyyy): ");
+			dataOut = sdf.parse(sc.next());
+			Date now = new Date();
+			if(!dataOut.after(dataIn)) {
+				System.out.println("Error in reservation: Check-out date must be after check-in date");
+			}
+			else if(dataIn.before(now) || dataOut.before(now)) {
+				System.out.println("Error in reservation: Reservation dates for update must be future dates.");
+			}
+			else {
+				reserva.updateDates(dataIn, dataOut);
+				System.out.println(reserva);
+			}
+		}
+			sc.close();
+	
+
 	}
 
 }

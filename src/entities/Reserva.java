@@ -1,8 +1,8 @@
 package entities;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 public class Reserva {
 	private static SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
@@ -34,62 +34,33 @@ public class Reserva {
 		return checkin;
 	}
 
-	public void setCheckin(Date checkin) {
-		this.checkin = checkin;
-	}
-
 	public Date getCheckout() {
 		return checkout;
 	}
-
-	public void setCheckout(Date checkout) {
+	
+	public long duration() {
+		long diff = checkout.getTime() - checkin.getTime();
+		return TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
+	}
+	
+	public void updateDates(Date checkin, Date checkout) {
+		this.checkin = checkin;
 		this.checkout = checkout;
 	}
 	
-	public Integer duracao() {
-		Date dataAtual = new Date();
-		//String data = sdf.format(dataAtual);
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(dataAtual);
-		int anoAtual = cal.get(Calendar.YEAR);
-		//System.out.println(anoAtual);
-		cal.setTime(checkin);
-		int diaIn = cal.get(Calendar.DAY_OF_MONTH);
-		@SuppressWarnings("unused")
-		int mesIn = cal.get(Calendar.MONTH);
-		int anoIn = cal.get(Calendar.YEAR);
-		cal.setTime(checkout);
-		int diaOut = cal.get(Calendar.DAY_OF_MONTH);
-		@SuppressWarnings("unused")
-		int mesOut = cal.get(Calendar.MONDAY);
-		int anoOut = cal.get(Calendar.YEAR);
-		
-		if(anoIn >= anoAtual && anoOut >= anoAtual) {
-			if(diaOut > diaIn){
-				return diaOut - diaIn;
-			}else {
-				return 1;
-			}
-		}else {
-			return 2;
-		}
-	}
 	
+	
+	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		if(duracao() != 1 && duracao() !=2) {
 			sb.append("Reservation: Room ");
 			sb.append(this.getNumero()+", ");
 			sb.append("check-in: ");
 			sb.append(sdf.format(this.getCheckin())+", ");
 			sb.append("check-out: ");
 			sb.append(sdf.format(this.getCheckout())+", ");
-			sb.append(duracao()+" nights");
-		}else if(duracao() == 1) {
-			sb.append("Error in reservation: Check-out date must be after check-in date");
-		}else if(duracao() == 2) {
-			sb.append("Error in reservation: Reservation dates for update must be future dates");
-		}
+			sb.append(duration()+" nights");
+		
 		return sb.toString();
 	}
 }
