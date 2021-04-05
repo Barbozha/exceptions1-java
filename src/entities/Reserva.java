@@ -1,7 +1,6 @@
 package entities;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
@@ -10,7 +9,6 @@ public class Reserva {
 	private Date checkin;
 	private Date checkout;
 	
-	private Integer retorno;
 	private static SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 	
 	public Reserva() {
@@ -21,7 +19,7 @@ public class Reserva {
 		this.roomNumber = roomNumber;
 		this.checkin = checkin;
 		this.checkout = checkout;
-		checarData();
+		//checarData();
 	}
 
 	public Integer getRoomNumber() {
@@ -45,43 +43,22 @@ public class Reserva {
 		return TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
 	}
 	
-	public void checarData() {
+	public String updateDates(Date checkin, Date checkout) {
 		Date now = new Date();
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(now);
-		int anoAtual = cal.get(Calendar.YEAR);
-		cal.setTime(checkin);
-		int diaIn = cal.get(Calendar.DAY_OF_MONTH);
-		int anoIn = cal.get(Calendar.YEAR);
-		cal.setTime(checkout);
-		int diaOut = cal.get(Calendar.DAY_OF_MONTH);
-		int anoOut = cal.get(Calendar.YEAR);
-		if(anoIn == anoAtual  || anoOut >= anoAtual) {
-			if(diaIn < diaOut) {
-				retorno = 0;
-			}else{
-				retorno = 1;
-			}	
-		}else {
-			retorno = 2;
+		if(checkin.before(now) || checkout.before(now)) {
+			return "Reservation dates for update must be future dates";
 		}
-	}
-	
-	public void updateDates(Date checkin, Date checkout) {
+		if(!checkout.after(checkin)) {
+			return "Check-out date must be after check-in date";
+		}
 		this.checkin = checkin;
 		this.checkout = checkout;
-		checarData();
+		return null;
 	}
 	
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		if(retorno == 0) {
 			sb.append("Reservation: Room "+this.getRoomNumber()+", check-in: "+sdf.format(this.getCheckin())+", check-out: "+sdf.format(this.getCheckout())+", "+duracao()+" nights");
-		}else if(retorno == 1) {
-			sb.append("Error in reservation: Check-out date must be after check-in date.");
-		}else if(retorno ==2){
-			sb.append("Error in reservation: Reservation dates for update must be future dates.");
-		}
 		return sb.toString();
 	}
 

@@ -31,8 +31,14 @@ public class Principal {
 		dataEntrada = sdf.parse(sc.next());
 		System.out.print("Check-out date (dd/MM/yyyy): ");
 		dataSaida = sdf.parse(sc.next());
-		reserva.updateDates(dataEntrada, dataSaida);
-		System.out.println(reserva);
+		String error = reserva.updateDates(dataEntrada, dataSaida);
+		if(error != null) {
+			System.out.println("Error in reservation: "+error);
+		}
+		else {
+			System.out.println("Reservation: "+ reserva);
+		}
+		
 		sc.close();
 	}
 
