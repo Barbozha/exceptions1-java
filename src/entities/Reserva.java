@@ -5,6 +5,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import model.exception.DomainException;
+
 public class Reserva {
 	private Integer roomNumber;
 	private Date checkin;
@@ -16,11 +18,13 @@ public class Reserva {
 		
 	}
 
-	public Reserva(Integer roomNumber, Date checkin, Date checkout) {
+	public Reserva(Integer roomNumber, Date checkin, Date checkout) throws DomainException {
+		if(!checkout.after(checkin)){
+			throw new DomainException("Check-out date must be after check-in date");
+		}
 		this.roomNumber = roomNumber;
 		this.checkin = checkin;
 		this.checkout = checkout;
-		updateDates(checkin, checkout);
 	}
 
 	public Integer getRoomNumber() {
@@ -44,7 +48,7 @@ public class Reserva {
 		return TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
 	}
 	
-	public void updateDates(Date checkin, Date checkout) {
+	public void updateDates(Date checkin, Date checkout)  throws DomainException {
 		Date now = new Date();
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(now);
@@ -53,11 +57,11 @@ public class Reserva {
 		int anoIn = cal.get(Calendar.YEAR);
 		cal.setTime(checkout);
 		int anoOut = cal.get(Calendar.YEAR);
-		if(!checkout.after(checkin)) {
-			throw new IllegalArgumentException("Check-out date must be after check-in date");
+		if(!checkout.after(checkin)){
+			throw new DomainException("Check-out date must be after check-in date");
 		}
 		if(anoIn < anoAtual || anoOut < anoAtual) {
-			throw new IllegalArgumentException("Reservation dates for update must be future dates");
+			throw new DomainException("Reservation dates for update must be future dates");
 		}
 		this.checkin = checkin;
 		this.checkout = checkout;
