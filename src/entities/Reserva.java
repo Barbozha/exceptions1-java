@@ -1,6 +1,7 @@
 package entities;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
@@ -19,7 +20,7 @@ public class Reserva {
 		this.roomNumber = roomNumber;
 		this.checkin = checkin;
 		this.checkout = checkout;
-		//checarData();
+		updateDates(checkin, checkout);
 	}
 
 	public Integer getRoomNumber() {
@@ -43,17 +44,23 @@ public class Reserva {
 		return TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
 	}
 	
-	public String updateDates(Date checkin, Date checkout) {
+	public void updateDates(Date checkin, Date checkout) {
 		Date now = new Date();
-		if(checkin.before(now) || checkout.before(now)) {
-			return "Reservation dates for update must be future dates";
-		}
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(now);
+		int anoAtual = cal.get(Calendar.YEAR);
+		cal.setTime(checkin);
+		int anoIn = cal.get(Calendar.YEAR);
+		cal.setTime(checkout);
+		int anoOut = cal.get(Calendar.YEAR);
 		if(!checkout.after(checkin)) {
-			return "Check-out date must be after check-in date";
+			throw new IllegalArgumentException("Check-out date must be after check-in date");
+		}
+		if(anoIn < anoAtual || anoOut < anoAtual) {
+			throw new IllegalArgumentException("Reservation dates for update must be future dates");
 		}
 		this.checkin = checkin;
 		this.checkout = checkout;
-		return null;
 	}
 	
 	public String toString() {
